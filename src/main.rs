@@ -44,6 +44,7 @@ fn main() {
 
 fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
     let secret_string = secret.to_string();
+    let secret_string_vector : Vec<_> = secret_string.chars().collect();
     let guess_string = guess.to_string();
 
     let mut perfect_count = 0;
@@ -51,17 +52,12 @@ fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
     let mut bad_count = 0;
 
     for (guess_index, guess_integer) in guess_string.chars().enumerate() {
-        match secret_string.find(guess_integer) {
-            Some(secret_index) => {
-                if guess_index == secret_index {
-                    perfect_count += 1;
-                } else {
-                    good_count += 1;
-                }
-            },
-            None => {
-                bad_count += 1;
-            }
+        if guess_integer == secret_string_vector[guess_index] {
+            perfect_count += 1;
+        } else if secret_string_vector.contains(&guess_integer) {
+            good_count += 1;
+        } else {
+            bad_count += 1;
         }
     }
 
