@@ -1,6 +1,7 @@
 use structopt::StructOpt;
 use read_input::prelude::*;
 use rand::Rng;
+use std::Vect;
 
 #[derive(Debug, StructOpt)]
 struct Cli {
@@ -28,17 +29,18 @@ fn main() {
     dbg!(guess);
     dbg!(secret_number);
 
-    for (guess_index, guess_integer) in guess_string.chars().enumerate() {
-        for (secret_number_index, secret_number_integer) in secret_number_string.chars().enumerate() {
-            if guess_integer == secret_number_integer {
-                if guess_index == secret_number_index {
-                    perfect_count = perfect_count + 1;
-                } else {
-                    good_count = good_count + 1;
-                }
+    let guess_enum = guess_string.chars().enumerate();
+    let secret_number_vector : Vec<_> = secret_number_string.chars().collect();
+
+    for (guess_index, guess_integer) in guess_enum {
+        if guess_integer == secret_number_vector[guess_index] {
+            if guess_index == secret_number_index {
+                perfect_count = perfect_count + 1;
             } else {
-                bad_count = bad_count + 1;
+                good_count = good_count + 1;
             }
+        } else {
+            bad_count = bad_count + 1;
         }
     }
 
