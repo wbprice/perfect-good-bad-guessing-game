@@ -16,6 +16,6 @@ The game will provide feedback to the user for each guess.
 ## Usage
 
 1. Install Rust using [rustup.rs](https://rustup.rs/)
-2. `cargo run`
+2. `cargo run -- --digit 3`
 3. Keep guessing until you win!
 
