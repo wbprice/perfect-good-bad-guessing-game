@@ -10,7 +10,6 @@ struct Cli {
 
 fn main() {
     let args = Cli::from_args();
-    dbg!(args.digit);
 
     let guess : i64 = input().msg("What is your guess?").get();
     let secret_number_min = 100;
@@ -32,13 +31,13 @@ fn main() {
         match secret_number_string.find(guess_integer) {
             Some(secret_index) => {
                 if guess_index == secret_index {
-                    perfect_count = perfect_count + 1;
+                    perfect_count += 1;
                 } else {
-                    good_count = good_count + 1;
+                    good_count += 1;
                 }
             },
             None => {
-                bad_count = bad_count + 1;
+                bad_count += 1;
             }
         }
     }
