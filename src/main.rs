@@ -22,22 +22,27 @@ fn main() {
     let secret_number = rand::thread_rng()
         .gen_range(secret_number_min, secret_number_max);
 
-    let guess : i64 = input().msg("What is your guess? ").get();
-    let guess_ratings = evaluate_guess(guess, secret_number);
+    let mut complete = false;
 
-    println!("{} Perfect", guess_ratings.perfect);
-    println!("{} Good", guess_ratings.good);
-    println!("{} Bad", guess_ratings.bad);
+    while !complete {
+        let guess : i64 = input().msg("What is your guess? ").get();
+        let guess_ratings = rate_guess(guess, secret_number);
 
-    if guess_ratings.perfect == 3 {
-        println!("You win!");
-    } else {
-        println!("You didn't win, try again!");
+        println!("{} Perfect", guess_ratings.perfect);
+        println!("{} Good", guess_ratings.good);
+        println!("{} Bad", guess_ratings.bad);
+
+        if guess_ratings.perfect == 3 {
+            println!("You win!");
+            complete = true
+        } else {
+            println!("You didn't win, try again!");
+        }
     }
 }
 
 
-fn evaluate_guess(guess: i64, secret: i64) -> GuessRatings {
+fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
     let secret_string = secret.to_string();
     let guess_string = guess.to_string();
 
