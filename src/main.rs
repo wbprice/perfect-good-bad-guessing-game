@@ -11,7 +11,7 @@ struct Cli {
 fn main() {
     let args = Cli::from_args();
 
-    let guess : i64 = input().msg("What is your guess?").get();
+    let guess : i64 = input().msg("What is your guess? ").get();
     let secret_number_min = 100;
     let secret_number_max = 999;
     let secret_number = rand::thread_rng()
