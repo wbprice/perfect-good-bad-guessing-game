@@ -4,7 +4,7 @@ use rand::Rng;
 
 #[derive(Debug, StructOpt)]
 struct Cli {
-    #[structopt(short = "d", long = "digit")]
+    #[structopt(short = "d", long = "digit", default_value="3")]
     digit: i8
 }
 
@@ -17,8 +17,12 @@ struct GuessRatings {
 fn main() {
     let args = Cli::from_args();
 
-    let secret_number_min = 100;
-    let secret_number_max = 999;
+    let secret_number_min : i64 = i64::pow(10, args.digit as u32 - 1);
+    let secret_number_max : i64 = i64::pow(10, args.digit as u32) - 1;
+
+    dbg!(secret_number_min);
+    dbg!(secret_number_max);
+
     let secret_number = rand::thread_rng()
         .gen_range(secret_number_min, secret_number_max);
 
@@ -32,7 +36,7 @@ fn main() {
         println!("{} Good", guess_ratings.good);
         println!("{} Bad", guess_ratings.bad);
 
-        if guess_ratings.perfect == 3 {
+        if guess_ratings.perfect == args.digit as i8 {
             println!("You win!");
             break;
         } else {
