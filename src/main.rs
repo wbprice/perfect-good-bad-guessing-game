@@ -42,8 +42,13 @@ fn main() {
         }
     }
 
-    dbg!(perfect_count);
-    dbg!(good_count);
-    dbg!(bad_count);
-}
+    println!("{} Perfect", perfect_count);
+    println!("{} Good", good_count);
+    println!("{} Bad", bad_count);
 
+    if good_count == 3 {
+        println!("You win!");
+    } else {
+        println!("You didn't win, try again!");
+    }
+}
