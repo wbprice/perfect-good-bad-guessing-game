@@ -22,9 +22,9 @@ fn main() {
     let secret_number = rand::thread_rng()
         .gen_range(secret_number_min, secret_number_max);
 
-    let mut complete = false;
+    dbg!(secret_number);
 
-    while !complete {
+    loop {
         let guess : i64 = input().msg("What is your guess? ").get();
         let guess_ratings = rate_guess(guess, secret_number);
 
@@ -34,7 +34,7 @@ fn main() {
 
         if guess_ratings.perfect == 3 {
             println!("You win!");
-            complete = true
+            break;
         } else {
             println!("You didn't win, try again!");
         }
