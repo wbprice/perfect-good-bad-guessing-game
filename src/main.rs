@@ -5,7 +5,9 @@ use rand::Rng;
 #[derive(Debug, StructOpt)]
 struct Cli {
     #[structopt(short = "d", long = "digit", default_value="3")]
-    digit: i8
+    digit: i8,
+    #[structopt(long = "debug", default_value="false")]
+    debug: bool
 }
 
 struct GuessRatings {
@@ -19,18 +21,22 @@ fn main() {
 
     let secret_number_min : i64 = i64::pow(10, args.digit as u32 - 1);
     let secret_number_max : i64 = i64::pow(10, args.digit as u32) - 1;
-
-    dbg!(secret_number_min);
-    dbg!(secret_number_max);
-
     let secret_number = rand::thread_rng()
         .gen_range(secret_number_min, secret_number_max);
 
-    dbg!(secret_number);
+    if args.debug {
+        dbg!(secret_number_min);
+        dbg!(secret_number_max);
+        dbg!(secret_number);
+    }
 
     loop {
         let guess : i64 = input().msg("What is your guess? ").get();
         let guess_ratings = rate_guess(guess, secret_number);
+
+        if args.debug {
+            dbg!(guess);
+        }
 
         println!("{} Perfect", guess_ratings.perfect);
         println!("{} Good", guess_ratings.good);
