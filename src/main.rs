@@ -6,7 +6,7 @@ use rand::Rng;
 struct Cli {
     #[structopt(short = "d", long = "digit", default_value="3")]
     digit: i8,
-    #[structopt(long = "debug", default_value="false")]
+    #[structopt(long = "debug")]
     debug: bool
 }
 
