@@ -25,13 +25,17 @@ fn main() {
         .gen_range(secret_number_min, secret_number_max);
 
     if args.debug {
+        dbg!(&args);
         dbg!(secret_number_min);
         dbg!(secret_number_max);
         dbg!(secret_number);
     }
 
     loop {
-        let guess : i64 = input().msg("What is your guess? ").get();
+        let guess : i64 = input()
+            .inside_err(secret_number_min..=secret_number_max, format!("Your guess must have {} digits.  Try again!", args.digit))
+            .msg("What is your guess? ").get();
+
         let guess_ratings = rate_guess(guess, secret_number);
 
         if args.debug {
