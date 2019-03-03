@@ -38,27 +38,41 @@ fn main() {
     }
 
     loop {
-        let guess : i64 = input()
-            .inside_err(secret_number_min..=secret_number_max, format!("Your guess must have {} digits.  Try again!", args.digit))
-            .msg("What is your guess? ").get();
-
-        let guess_ratings = rate_guess(guess, secret_number);
+        let guess = make_guess(secret_number_min, secret_number_max, args.auto);
+        let guess_rating = rate_guess(guess, secret_number);
 
         if args.debug {
             dbg!(guess);
         }
 
-        println!("{} Perfect", guess_ratings.perfect);
-        println!("{} Good", guess_ratings.good);
-        println!("{} Bad", guess_ratings.bad);
+        println!("{} Perfect", guess_rating.perfect);
+        println!("{} Good", guess_rating.good);
+        println!("{} Bad", guess_rating.bad);
 
-        if guess_ratings.perfect == args.digit as i8 {
+        if guess_rating.perfect == args.digit as i8 {
             println!("You win!");
             break;
         } else {
             println!("You didn't win, try again!");
         }
     }
+}
+
+fn make_guess(secret_number_min: i64, secret_number_max: i64, auto: bool) -> i64 {
+    if auto {
+        return cpu_guess(secret_number_min, secret_number_max);
+    }
+    return person_guess(secret_number_min, secret_number_max);
+}
+
+fn person_guess(secret_number_min: i64, secret_number_max: i64) -> i64 {
+    input()
+        .inside_err(secret_number_min..=secret_number_max, format!("Your guess must have {} digits.  Try again!", args.digit))
+        .msg("What is your guess? ").get()
+}
+
+fn cpu_guess(secret_number_min: i64, secret_number_max: i64) -> i64 {
+    
 }
 
 
