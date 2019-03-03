@@ -26,6 +26,7 @@ struct GuessRatings {
 struct NumberMemory {
     perfect: Vec<(i8, i8)>,
     good: Vec<(i8, i8)>,
+    perfect_or_good: Vec<(i8, i8)>,
     bad: Vec<i8>
 }
 
@@ -100,6 +101,12 @@ fn cpu_analyze_score(guess: GuessRatings, memory: &mut NumberMemory) {
     // If all three numbers were bad, none of them should be used in future guesses.
     if guess.bad == 3 {
         memory.bad.append(&mut split_number(guess.number))
+    } else if guess.good == 3 {
+        memory.good.append(&mut split_number(guess.number)
+            .iter()
+            .enumerate()
+            .map(|(x, y)| (x as i8, *y))
+            .collect())
     }
 }
 
@@ -207,6 +214,24 @@ mod tests {
             ..Default::default()
         };
         cpu_analyze_score(rate_guess(132, 999), &mut number_memory);
+        dbg!(number_memory);
+    }
+
+    #[test]
+    fn test_cpu_analyze_three_bad() {
+        let mut number_memory = NumberMemory {
+            ..Default::default()
+        };
+        cpu_analyze_score(rate_guess(132, 999), &mut number_memory);
+        dbg!(number_memory);
+    }
+
+    #[test]
+    fn test_cpu_analyze_three_good() {
+        let mut number_memory = NumberMemory {
+            ..Default::default()
+        };
+        cpu_analyze_score(rate_guess(123, 321), &mut number_memory);
         dbg!(number_memory);
     }
 }
