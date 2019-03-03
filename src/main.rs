@@ -53,9 +53,9 @@ fn main() {
 
         if guess_rating.perfect == args.digit as i8 {
             if args.auto {
-                println!("The CPU won!");
+                println!("The CPU won in {} guesses!", guesses.len());
             } else {
-                println!("You win!");
+                println!("You won in {} guesses!", guesses.len());
             }
             break;
         } else {
