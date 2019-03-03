@@ -72,9 +72,11 @@ fn person_guess(secret_number_min: i64, secret_number_max: i64) -> i64 {
 }
 
 fn cpu_guess(secret_number_min: i64, secret_number_max: i64) -> i64 {
-    
+    let guess = rand::thread_rng()
+        .gen_range(secret_number_min, secret_number_max);
+    println!("The CPU guesses . . . {}", guess);
+    guess
 }
-
 
 fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
     let secret_string = secret.to_string();
