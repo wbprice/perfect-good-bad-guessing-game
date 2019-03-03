@@ -7,7 +7,9 @@ struct Cli {
     #[structopt(short = "d", long = "digit", default_value="3")]
     digit: i8,
     #[structopt(long = "debug")]
-    debug: bool
+    debug: bool,
+    #[structopt(short = "a", long="auto")]
+    auto: bool
 }
 
 struct GuessRatings {
