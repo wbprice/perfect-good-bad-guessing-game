@@ -15,6 +15,7 @@ struct Cli {
     auto: bool
 }
 
+#[derive(Debug)]
 struct GuessRatings {
     number: i64,
     perfect: i8,
@@ -22,7 +23,7 @@ struct GuessRatings {
     bad: i8
 }
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug)]
 struct NumberMemory {
     perfect: Vec<(i8, i8)>,
     good: Vec<(i8, i8)>,
@@ -42,6 +43,9 @@ fn main() {
     let secret_number = rand::thread_rng()
         .gen_range(secret_number_min, secret_number_max);
     let mut guesses : Vec<GuessRatings> = Vec::new();
+    let mut number_memory = NumberMemory {
+        ..Default::default()
+    };
 
     if args.debug {
         dbg!(&args);
@@ -75,7 +79,13 @@ fn main() {
             } else {
                 println!("You didn't win, try again!");
             }
+            cpu_analyze_score(&guess_rating, &mut number_memory);
             guesses.push(guess_rating);
+
+            if args.debug {
+                dbg!(&number_memory);
+                dbg!(&guesses);
+            }
         }
     }
 }
@@ -97,12 +107,20 @@ fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRat
     cpu_naive_guess(secret_number_min, secret_number_max, guesses)
 }
 
-fn cpu_analyze_score(guess: GuessRatings, memory: &mut NumberMemory) {
+fn cpu_analyze_score(rating: &GuessRatings, memory: &mut NumberMemory) {
+    if rating.bad == 3 {
     // If all three numbers were bad, none of them should be used in future guesses.
-    if guess.bad == 3 {
-        memory.bad.append(&mut split_number(guess.number))
-    } else if guess.good == 3 {
-        memory.good.append(&mut split_number(guess.number)
+        memory.bad.append(&mut split_number(rating.number))
+    } else if rating.good == 3 {
+    // If all three numbers were good, they should be used but in different combinations
+        memory.good.append(&mut split_number(rating.number)
+            .iter()
+            .enumerate()
+            .map(|(x, y)| (x as i8, *y))
+            .collect())
+    } else if rating.perfect > 0 && rating.good > 0 && rating.bad == 0 {
+    // If all three numbers were good or perfect, note that too
+        memory.perfect_or_good.append(&mut split_number(rating.number)
             .iter()
             .enumerate()
             .map(|(x, y)| (x as i8, *y))
@@ -138,18 +156,17 @@ fn split_number(number: i64) -> Vec<i8> {
 }
 
 fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
-    let secret_string = secret.to_string();
-    let secret_string_vector : Vec<_> = secret_string.chars().collect();
-    let guess_string = guess.to_string();
+    let secret_numbers : Vec<_> = split_number(guess);
+    let guesses : Vec<_> = split_number(secret);
 
     let mut perfect_count = 0;
     let mut good_count = 0;
     let mut bad_count = 0;
 
-    for (guess_index, guess_integer) in guess_string.chars().enumerate() {
-        if guess_integer == secret_string_vector[guess_index] {
+    for (guess_index, guess_integer) in guesses.iter().enumerate() {
+        if *guess_integer == secret_numbers[guess_index] {
             perfect_count += 1;
-        } else if secret_string_vector.contains(&guess_integer) {
+        } else if secret_numbers.contains(&guess_integer) {
             good_count += 1;
         } else {
             bad_count += 1;
@@ -213,8 +230,8 @@ mod tests {
         let mut number_memory = NumberMemory {
             ..Default::default()
         };
-        cpu_analyze_score(rate_guess(132, 999), &mut number_memory);
-        dbg!(number_memory);
+        cpu_analyze_score(&rate_guess(932, 999), &mut number_memory);
+        assert_eq!(number_memory.perfect_or_good.len(), 3);
     }
 
     #[test]
@@ -222,8 +239,8 @@ mod tests {
         let mut number_memory = NumberMemory {
             ..Default::default()
         };
-        cpu_analyze_score(rate_guess(132, 999), &mut number_memory);
-        dbg!(number_memory);
+        cpu_analyze_score(&rate_guess(132, 999), &mut number_memory);
+        assert_eq!(number_memory.bad.len(), 3);
     }
 
     #[test]
@@ -231,7 +248,7 @@ mod tests {
         let mut number_memory = NumberMemory {
             ..Default::default()
         };
-        cpu_analyze_score(rate_guess(123, 321), &mut number_memory);
-        dbg!(number_memory);
+        cpu_analyze_score(&rate_guess(132, 321), &mut number_memory);
+        assert_eq!(number_memory.good.len(), 3);
     }
 }
