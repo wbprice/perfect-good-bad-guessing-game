@@ -15,7 +15,18 @@ The game will provide feedback to the user for each guess.
 
 ## Usage
 
-1. Install Rust using [rustup.rs](https://rustup.rs/)
-2. `cargo run -- --digit 3`
-3. Keep guessing until you win!
+First, install Rust using [rustup.rs](https://rustup.rs/)
 
+```
+USAGE:
+    perfect-good-bad [FLAGS] [OPTIONS]
+
+FLAGS:
+    -a, --auto       Asks the CPU to play itself
+        --debug      Turns on debug logging
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+OPTIONS:
+    -d, --digit <digit>    Sets the number of digits used for the secret number [default: 3]
+```
