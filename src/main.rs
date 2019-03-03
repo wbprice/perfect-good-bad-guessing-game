@@ -85,3 +85,48 @@ fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
         bad: bad_count
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_three_perfect() {
+        let ratings = rate_guess(123, 123);
+        assert_eq!(ratings.perfect, 3);
+        assert_eq!(ratings.good, 0);
+        assert_eq!(ratings.bad, 0);
+    }
+
+    #[test]
+    fn test_one_perfect_two_good() {
+        let ratings = rate_guess(102, 120);
+        assert_eq!(ratings.perfect, 1);
+        assert_eq!(ratings.good, 2);
+        assert_eq!(ratings.bad, 0);
+    }
+
+    #[test]
+    fn test_three_good() {
+        let ratings = rate_guess(132, 321);
+        assert_eq!(ratings.perfect, 0);
+        assert_eq!(ratings.good, 3);
+        assert_eq!(ratings.bad, 0);
+    }
+
+    #[test]
+    fn test_three_bad() {
+        let ratings = rate_guess(132, 999);
+        assert_eq!(ratings.perfect, 0);
+        assert_eq!(ratings.good, 0);
+        assert_eq!(ratings.bad, 3);
+    }
+
+    #[test]
+    fn test_one_perfect_two_bad() {
+        let ratings = rate_guess(132, 199);
+        assert_eq!(ratings.perfect, 1);
+        assert_eq!(ratings.good, 0);
+        assert_eq!(ratings.bad, 2);
+    }
+}
