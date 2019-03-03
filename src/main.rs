@@ -22,6 +22,12 @@ struct GuessRatings {
     bad: i8
 }
 
+struct NumberMemory {
+    perfect: Vec<(i8, i8)>,
+    good: Vec<(i8, i8)>,
+    bad: i8
+}
+
 fn main() {
     let args = Cli::from_args();
     if args.digit <= 0 {
@@ -86,6 +92,14 @@ fn person_guess(secret_number_min: i64, secret_number_max: i64, args: &Cli) -> i
 }
 
 fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRatings]) -> i64 {
+    cpu_naive_guess(secret_number_min, secret_number_max, guesses)
+}
+
+fn cpu_analyze_score(guess_rating: GuessRatings, mut memory: &NumberMemory) {
+
+}
+
+fn cpu_naive_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRatings]) -> {
     loop {
         let guess = rand::thread_rng()
             .gen_range(secret_number_min, secret_number_max);
@@ -94,6 +108,14 @@ fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRat
             return guess;
         }
     }
+}
+
+fn cpu_clever_guess(guesses: &[GuessRatings], memory: NumberMemory) {
+    // If the CPU knows any bad numbers, don't use them for future guesses.
+
+    // If the CPU knows any good numbers, use them in future guesses.
+
+    // If the CPU knows any perfect numbers, leave them where they are.
 }
 
 fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
