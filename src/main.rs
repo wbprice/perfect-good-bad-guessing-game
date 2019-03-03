@@ -18,6 +18,10 @@ struct GuessRatings {
 
 fn main() {
     let args = Cli::from_args();
+    if args.digit <= 0 {
+        eprintln!("The value passed to the digit argument must be greater than zero.");
+        std::process::exit(1);
+    }
 
     let secret_number_min : i64 = i64::pow(10, args.digit as u32 - 1);
     let secret_number_max : i64 = i64::pow(10, args.digit as u32) - 1;
