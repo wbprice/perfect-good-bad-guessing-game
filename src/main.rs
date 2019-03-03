@@ -38,7 +38,7 @@ fn main() {
     }
 
     loop {
-        let guess = make_guess(secret_number_min, secret_number_max, args.auto);
+        let guess = make_guess(secret_number_min, secret_number_max, &args);
         let guess_rating = rate_guess(guess, secret_number);
 
         if args.debug {
@@ -58,20 +58,20 @@ fn main() {
     }
 }
 
-fn make_guess(secret_number_min: i64, secret_number_max: i64, auto: bool) -> i64 {
-    if auto {
-        return cpu_guess(secret_number_min, secret_number_max);
+fn make_guess(secret_number_min: i64, secret_number_max: i64, args: &Cli) -> i64 {
+    if args.auto {
+        return cpu_guess(secret_number_min, secret_number_max, args);
     }
-    return person_guess(secret_number_min, secret_number_max);
+    return person_guess(secret_number_min, secret_number_max, args);
 }
 
-fn person_guess(secret_number_min: i64, secret_number_max: i64) -> i64 {
+fn person_guess(secret_number_min: i64, secret_number_max: i64, args: &Cli) -> i64 {
     input()
         .inside_err(secret_number_min..=secret_number_max, format!("Your guess must have {} digits.  Try again!", args.digit))
         .msg("What is your guess? ").get()
 }
 
-fn cpu_guess(secret_number_min: i64, secret_number_max: i64) -> i64 {
+fn cpu_guess(secret_number_min: i64, secret_number_max: i64, args: &Cli) -> i64 {
     let guess = rand::thread_rng()
         .gen_range(secret_number_min, secret_number_max);
     println!("The CPU guesses . . . {}", guess);
