@@ -22,10 +22,11 @@ struct GuessRatings {
     bad: i8
 }
 
+#[derive(Default)]
 struct NumberMemory {
     perfect: Vec<(i8, i8)>,
     good: Vec<(i8, i8)>,
-    bad: i8
+    bad: Vec<i8>
 }
 
 fn main() {
@@ -96,10 +97,13 @@ fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRat
 }
 
 fn cpu_analyze_score(guess_rating: GuessRatings, mut memory: &NumberMemory) {
-
+    // If all three numbers were bad, none of them should be used in future guesses.
+    if guess_rating.bad == 3 {
+        memory.push()
+    }
 }
 
-fn cpu_naive_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRatings]) -> {
+fn cpu_naive_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRatings]) -> i64 {
     loop {
         let guess = rand::thread_rng()
             .gen_range(secret_number_min, secret_number_max);
@@ -116,6 +120,14 @@ fn cpu_clever_guess(guesses: &[GuessRatings], memory: NumberMemory) {
     // If the CPU knows any good numbers, use them in future guesses.
 
     // If the CPU knows any perfect numbers, leave them where they are.
+}
+
+fn split_number(number: i64) -> Vec<i8> {
+    number
+        .to_string()
+        .chars()
+        .map(|d| d.to_digit(10).unwrap())
+        .collect()
 }
 
 fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
@@ -150,7 +162,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_three_perfect() {
+    fn test_rate_guess_three_perfect() {
         let ratings = rate_guess(123, 123);
         assert_eq!(ratings.perfect, 3);
         assert_eq!(ratings.good, 0);
@@ -158,7 +170,7 @@ mod tests {
     }
 
     #[test]
-    fn test_one_perfect_two_good() {
+    fn test_rate_guess_one_perfect_two_good() {
         let ratings = rate_guess(102, 120);
         assert_eq!(ratings.perfect, 1);
         assert_eq!(ratings.good, 2);
@@ -166,7 +178,7 @@ mod tests {
     }
 
     #[test]
-    fn test_three_good() {
+    fn test_rate_guess_three_good() {
         let ratings = rate_guess(132, 321);
         assert_eq!(ratings.perfect, 0);
         assert_eq!(ratings.good, 3);
@@ -174,7 +186,7 @@ mod tests {
     }
 
     #[test]
-    fn test_three_bad() {
+    fn test_rate_guess_three_bad() {
         let ratings = rate_guess(132, 999);
         assert_eq!(ratings.perfect, 0);
         assert_eq!(ratings.good, 0);
@@ -182,10 +194,20 @@ mod tests {
     }
 
     #[test]
-    fn test_one_perfect_two_bad() {
+    fn test_rate_guess_one_perfect_two_bad() {
         let ratings = rate_guess(132, 199);
         assert_eq!(ratings.perfect, 1);
         assert_eq!(ratings.good, 0);
         assert_eq!(ratings.bad, 2);
+    }
+
+    #[test]
+    fn test_cpu_analyze_one_perfect_two_bad() {
+        let number_memory = NumberMemory {
+            ..Default::default()
+        };
+        cpu_analyze_score(rate_guess(132, 199), &number_memory);
+        assert!(number_memory.bad.contains(&3));
+        assert!(number_memory.bad.contains(&2));
     }
 }
