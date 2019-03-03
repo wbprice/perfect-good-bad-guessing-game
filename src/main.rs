@@ -140,11 +140,15 @@ fn cpu_naive_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[Gu
 }
 
 fn cpu_clever_guess(guess: &[GuessRatings], memory: &mut NumberMemory) {
+    if memory.bad.len() > 0 && memory.bad.len() < 7 {
+        let digits = 0..9;
+        let bad_digits = &memory.bad;
+        let remaining_digits : Vec<_> = digits
+            .filter(|x| !bad_digits.contains(x))
+            .collect();
+    }
+
     // If the CPU knows any bad numbers, don't use them for future guesses.
-
-    // If the CPU knows any good numbers, use them in future guesses.
-
-    // If the CPU knows any perfect numbers, leave them where they are.
 }
 
 fn split_number(number: i64) -> Vec<i8> {
