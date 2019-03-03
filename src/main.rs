@@ -50,10 +50,18 @@ fn main() {
         println!("{} Bad", guess_rating.bad);
 
         if guess_rating.perfect == args.digit as i8 {
-            println!("You win!");
+            if args.auto {
+                println!("The CPU won!");
+            } else {
+                println!("You win!");
+            }
             break;
         } else {
-            println!("You didn't win, try again!");
+            if args.auto {
+                println!("The CPU didn't win!");
+            } else {
+                println!("You didn't win, try again!");
+            }
         }
     }
 }
