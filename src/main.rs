@@ -73,7 +73,7 @@ fn make_guess(secret_number_min: i64, secret_number_max: i64, guesses: &Vec<Gues
     if args.auto {
         return cpu_guess(secret_number_min, secret_number_max, guesses, args);
     }
-    return person_guess(secret_number_min, secret_number_max, args);
+    person_guess(secret_number_min, secret_number_max, args)
 }
 
 fn person_guess(secret_number_min: i64, secret_number_max: i64, args: &Cli) -> i64 {
