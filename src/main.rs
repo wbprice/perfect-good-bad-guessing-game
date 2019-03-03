@@ -83,15 +83,12 @@ fn person_guess(secret_number_min: i64, secret_number_max: i64, args: &Cli) -> i
 }
 
 fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &Vec<GuessRatings>, args: &Cli) -> i64 {
-    let guess = rand::thread_rng()
-        .gen_range(secret_number_min, secret_number_max);
-    println!("The CPU guesses . . . {}", guess);
-    let guess = match guesses.iter().find(|x| x.guess == guess) {
-        Some(guess) => {
-            guess
-        },
-        None => {
-            guess
+    loop {
+        let guess = rand::thread_rng()
+            .gen_range(secret_number_min, secret_number_max);
+        if guesses.iter().find(|x| x.guess == guess).is_none() {
+            println!("The CPU guesses . . . {}", guess);
+            return guess;
         }
     }
 }
