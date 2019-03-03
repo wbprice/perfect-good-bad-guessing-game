@@ -5,10 +5,13 @@ use rand::Rng;
 #[derive(Debug, StructOpt)]
 struct Cli {
     #[structopt(short = "d", long = "digit", default_value="3")]
+    /// Sets the number of digits used for the secret number
     digit: i8,
     #[structopt(long = "debug")]
+    /// Turns on debug logging
     debug: bool,
     #[structopt(short = "a", long="auto")]
+    /// Asks the CPU to play itself
     auto: bool
 }
 
@@ -69,9 +72,9 @@ fn main() {
     }
 }
 
-fn make_guess(secret_number_min: i64, secret_number_max: i64, guesses: &Vec<GuessRatings>, args: &Cli) -> i64 {
+fn make_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRatings], args: &Cli) -> i64 {
     if args.auto {
-        return cpu_guess(secret_number_min, secret_number_max, guesses, args);
+        return cpu_guess(secret_number_min, secret_number_max, guesses);
     }
     person_guess(secret_number_min, secret_number_max, args)
 }
@@ -82,7 +85,7 @@ fn person_guess(secret_number_min: i64, secret_number_max: i64, args: &Cli) -> i
         .msg("What is your guess? ").get()
 }
 
-fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &Vec<GuessRatings>, args: &Cli) -> i64 {
+fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRatings]) -> i64 {
     loop {
         let guess = rand::thread_rng()
             .gen_range(secret_number_min, secret_number_max);
