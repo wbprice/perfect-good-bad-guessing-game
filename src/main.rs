@@ -86,7 +86,14 @@ fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &Vec<Guess
     let guess = rand::thread_rng()
         .gen_range(secret_number_min, secret_number_max);
     println!("The CPU guesses . . . {}", guess);
-    guess
+    let guess = match guesses.iter().find(|x| x.guess == guess) {
+        Some(guess) => {
+            guess
+        },
+        None => {
+            guess
+        }
+    }
 }
 
 fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
