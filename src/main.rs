@@ -16,13 +16,13 @@ struct Cli {
 }
 
 struct GuessRatings {
-    guess: i64,
+    number: i64,
     perfect: i8,
     good: i8,
     bad: i8
 }
 
-#[derive(Default)]
+#[derive(Default, Debug, Clone)]
 struct NumberMemory {
     perfect: Vec<(i8, i8)>,
     good: Vec<(i8, i8)>,
@@ -96,10 +96,10 @@ fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRat
     cpu_naive_guess(secret_number_min, secret_number_max, guesses)
 }
 
-fn cpu_analyze_score(guess_rating: GuessRatings, mut memory: &NumberMemory) {
+fn cpu_analyze_score(guess: GuessRatings, memory: &mut NumberMemory) {
     // If all three numbers were bad, none of them should be used in future guesses.
-    if guess_rating.bad == 3 {
-        memory.push()
+    if guess.bad == 3 {
+        memory.bad.append(&mut split_number(guess.number))
     }
 }
 
@@ -107,14 +107,14 @@ fn cpu_naive_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[Gu
     loop {
         let guess = rand::thread_rng()
             .gen_range(secret_number_min, secret_number_max);
-        if guesses.iter().find(|x| x.guess == guess).is_none() {
+        if guesses.iter().find(|x| x.number == guess).is_none() {
             println!("The CPU guesses . . . {}", guess);
             return guess;
         }
     }
 }
 
-fn cpu_clever_guess(guesses: &[GuessRatings], memory: NumberMemory) {
+fn cpu_clever_guess(guess: &[GuessRatings], memory: &mut NumberMemory) {
     // If the CPU knows any bad numbers, don't use them for future guesses.
 
     // If the CPU knows any good numbers, use them in future guesses.
@@ -126,7 +126,7 @@ fn split_number(number: i64) -> Vec<i8> {
     number
         .to_string()
         .chars()
-        .map(|d| d.to_digit(10).unwrap())
+        .map(|d| d.to_digit(10).unwrap() as i8)
         .collect()
 }
 
@@ -150,7 +150,7 @@ fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
     }
 
     GuessRatings {
-        guess,
+        number: guess,
         perfect: perfect_count,
         good: good_count,
         bad: bad_count
@@ -203,11 +203,10 @@ mod tests {
 
     #[test]
     fn test_cpu_analyze_one_perfect_two_bad() {
-        let number_memory = NumberMemory {
+        let mut number_memory = NumberMemory {
             ..Default::default()
         };
-        cpu_analyze_score(rate_guess(132, 199), &number_memory);
-        assert!(number_memory.bad.contains(&3));
-        assert!(number_memory.bad.contains(&2));
+        cpu_analyze_score(rate_guess(132, 999), &mut number_memory);
+        dbg!(number_memory);
     }
 }
