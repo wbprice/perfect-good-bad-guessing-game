@@ -5,12 +5,18 @@ use rand::Rng;
 #[derive(Debug, StructOpt)]
 struct Cli {
     #[structopt(short = "d", long = "digit", default_value="3")]
+    /// Sets the number of digits used for the secret number
     digit: i8,
     #[structopt(long = "debug")]
-    debug: bool
+    /// Turns on debug logging
+    debug: bool,
+    #[structopt(short = "a", long="auto")]
+    /// Asks the CPU to play itself
+    auto: bool
 }
 
 struct GuessRatings {
+    guess: i64,
     perfect: i8,
     good: i8,
     bad: i8
@@ -27,6 +33,7 @@ fn main() {
     let secret_number_max : i64 = i64::pow(10, args.digit as u32) - 1;
     let secret_number = rand::thread_rng()
         .gen_range(secret_number_min, secret_number_max);
+    let mut guesses : Vec<GuessRatings> = Vec::new();
 
     if args.debug {
         dbg!(&args);
@@ -36,29 +43,58 @@ fn main() {
     }
 
     loop {
-        let guess : i64 = input()
-            .inside_err(secret_number_min..=secret_number_max, format!("Your guess must have {} digits.  Try again!", args.digit))
-            .msg("What is your guess? ").get();
-
-        let guess_ratings = rate_guess(guess, secret_number);
+        let guess = make_guess(secret_number_min, secret_number_max, &guesses, &args);
+        let guess_rating = rate_guess(guess, secret_number);
 
         if args.debug {
             dbg!(guess);
         }
 
-        println!("{} Perfect", guess_ratings.perfect);
-        println!("{} Good", guess_ratings.good);
-        println!("{} Bad", guess_ratings.bad);
+        println!("{} Perfect", guess_rating.perfect);
+        println!("{} Good", guess_rating.good);
+        println!("{} Bad", guess_rating.bad);
 
-        if guess_ratings.perfect == args.digit as i8 {
-            println!("You win!");
+        if guess_rating.perfect == args.digit as i8 {
+            if args.auto {
+                println!("The CPU won in {} guesses!", guesses.len());
+            } else {
+                println!("You won in {} guesses!", guesses.len());
+            }
             break;
         } else {
-            println!("You didn't win, try again!");
+            if args.auto {
+                println!("The CPU didn't win!");
+            } else {
+                println!("You didn't win, try again!");
+            }
+            guesses.push(guess_rating);
         }
     }
 }
 
+fn make_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRatings], args: &Cli) -> i64 {
+    if args.auto {
+        return cpu_guess(secret_number_min, secret_number_max, guesses);
+    }
+    person_guess(secret_number_min, secret_number_max, args)
+}
+
+fn person_guess(secret_number_min: i64, secret_number_max: i64, args: &Cli) -> i64 {
+    input()
+        .inside_err(secret_number_min..=secret_number_max, format!("Your guess must have {} digits.  Try again!", args.digit))
+        .msg("What is your guess? ").get()
+}
+
+fn cpu_guess(secret_number_min: i64, secret_number_max: i64, guesses: &[GuessRatings]) -> i64 {
+    loop {
+        let guess = rand::thread_rng()
+            .gen_range(secret_number_min, secret_number_max);
+        if guesses.iter().find(|x| x.guess == guess).is_none() {
+            println!("The CPU guesses . . . {}", guess);
+            return guess;
+        }
+    }
+}
 
 fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
     let secret_string = secret.to_string();
@@ -80,6 +116,7 @@ fn rate_guess(guess: i64, secret: i64) -> GuessRatings {
     }
 
     GuessRatings {
+        guess,
         perfect: perfect_count,
         good: good_count,
         bad: bad_count
